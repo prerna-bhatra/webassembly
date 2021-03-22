@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //imports object
+        const imports={
+            env:{
+                consoleLog:console.log
+            }
+        }
+            console.log("FIRST CALLING C FROM JS EXPORTS")
+        //test.wasm
+        // int main()
+        // {
+        //     return 42
+        // }
+        // int getNum()
+        // {
+        //     return 22;
+        // }
+
+        
+        //  WebAssembly.instantiateStreaming(fetch('/test.wasm'),imports)
+        //  .then(wasm=>
+        //  {
+        //     console.log("WASM Ready")
+        //     window.wasm=wasm
+
+        //     console.log(WebAssembly.Module.exports(getNum()))
+        //  })
+         
+            console.log("GET DOUBLE OF A NUMBER i.e. CALLING JAVSCRIPT FROM C")
+
+         WebAssembly.instantiateStreaming(fetch('/program.wasm'),imports)
+         .then(wasm=>
+         {
+            console.log("WASM Ready")
+            ///wasm object accessble
+            window.wasm=wasm
+            // console.log(WebAssembly.Module.exports(wasm.module))
+            //log out all exported functions
+            wasm.instance.exports.getDouble(6)
+         })
+         //wasm fiddle  program.wasm
+            // int main() { 
+            // return 42;
+            // }
+
+            // void getDouble(int x)
+            // {
+            // consoleLog(x*2);
+            // }
+
+
+            console.log('MEMORY ACCESS')
+
+    </script>
+</body>
+</html>
