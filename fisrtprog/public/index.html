@@ -8,10 +8,27 @@
 </head>
 <body>
     <script>
+         //readout string from webassembly memory 
+         const readMemStr=(offset,length)=>
+         {
+             const strBuffer=new Uint8Array(wasm.instance.exports.memory.buffer,offset,length)
+             const str=new TextDecoder().decode(strBuffer)
+             console.log(str)
+
+            window.dispatchEvent(new CustomEvent('wasmValue',{detail:str}))
+                //notify for new wasm string         
+        }
+
+          window.addEventListener('wasmValue',str=>{
+                        console.log('Recived a new string from c:',str.detail)
+                 })
+
         //imports object
         const imports={
             env:{
-                consoleLog:console.log
+                consoleLog:console.log,
+                strLog:readMemStr
+
             }
         }
             console.log("FIRST CALLING C FROM JS EXPORTS")
@@ -37,16 +54,16 @@
          
             console.log("GET DOUBLE OF A NUMBER i.e. CALLING JAVSCRIPT FROM C")
 
-         WebAssembly.instantiateStreaming(fetch('/program.wasm'),imports)
-         .then(wasm=>
-         {
-            console.log("WASM Ready")
-            ///wasm object accessble
-            window.wasm=wasm
-            // console.log(WebAssembly.Module.exports(wasm.module))
-            //log out all exported functions
-            wasm.instance.exports.getDouble(6)
-         })
+        //  WebAssembly.instantiateStreaming(fetch('/program.wasm'),imports)
+        //  .then(wasm=>
+        //  {
+        //     console.log("WASM Ready")
+        //     ///wasm object accessble
+        //     window.wasm=wasm
+        //     // console.log(WebAssembly.Module.exports(wasm.module))
+        //     //log out all exported functions
+        //     wasm.instance.exports.getDouble(6)
+        //  })
          //wasm fiddle  program.wasm
             // int main() { 
             // return 42;
@@ -60,6 +77,37 @@
 
             console.log('MEMORY ACCESS')
 
+            //program1.wasm
+            // #include<string.h>
+            // void  strLog(char *offset,length);
+
+            // int main() { 
+            // return 42;
+            // }
+
+            // void greet()
+            // {
+            // char *msg="hello from c";
+            // strLog(msg,strlen(msg));
+            // }
+
+
+
+            WebAssembly.instantiateStreaming(fetch('/program1.wasm'),imports)
+                .then(wasm=>
+                {
+                    console.log("WASM Ready")
+                    ///wasm object accessble
+                    window.wasm=wasm
+                    // console.log(WebAssembly.Module.exports(wasm.module))
+                    //log out all exported functions
+                    wasm.instance.exports.greet()
+                 
+                })
+
     </script>
 </body>
 </html>
+
+
+
